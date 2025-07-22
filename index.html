@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>IoT Dashboard</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
+</head>
+<body>
+  <h2>ESP Sensor Dashboard</h2>
+  <p>Temperature: <span id="temp">--</span> °C</p>
+  <p>LDR: <span id="ldr">--</span></p>
+  <p>Fan Status: <span id="fan">--</span></p>
+  <p>LED Status: <span id="led">--</span></p>
+
+  <script>
+    const client = mqtt.connect('wss://broker.hivemq.com:8884/mqtt');
+    client.on('connect', () => {
+      client.subscribe('/iot/sensors/temperature');
+      client.subscribe('/iot/sensors/ldr');
+      client.subscribe('/iot/status/fan');
+      client.subscribe('/iot/status/led');
+    });
+
+    client.on('message', (topic, message) => {
+      if (topic === '/iot/sensors/temperature') {
+        document.getElementById('temp').innerText = message.toString();
+      } else if (topic === '/iot/sensors/ldr') {
+        document.getElementById('ldr').innerText = message.toString();
+      } else if (topic === '/iot/status/fan') {
+        document.getElementById('fan').innerText = message.toString();
+      } else if (topic === '/iot/status/led') {
+        document.getElementById('led').innerText = message.toString();
+      }
+    });
+  </script>
+</body>
+</html>
